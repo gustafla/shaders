@@ -1,4 +1,6 @@
+#ifdef GL_ES
 precision highp float;
+#endif
 
 uniform sampler2D iChannel0;
 uniform float iGlobalTime;

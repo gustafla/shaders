@@ -30,7 +30,7 @@ float clamp(float i, float f, float c) {
 #define EPSILON 0.001f
 #define NUM_POINTLIGHTS 1
 
-glm::vec3 cam; = glm::vec3(0.0, 0.0, 0.0);
+glm::vec3 cam = glm::vec3(0.0, 0.0, 0.0);
 glm::vec3 pointlights[NUM_POINTLIGHTS];
 glm::vec3 normal;
 

@@ -9,8 +9,10 @@ float t = iGlobalTime;
 
 #define PI 3.14159265
 #define E 0.001
-#define MD 40.0
-#define I 100
+#define MD 60.0
+#define I 80
+#define MS 11.0
+#define B 0.6
 
 vec3 cam;
 vec3 nm;
@@ -71,11 +73,11 @@ float tube(vec3 p) {
 
 float f(vec3 p) {
     vec3 tp = p;
-    tp.z=clamp(tp.z, 10.0, 20.0);
-    tp.y*=sin(tp.x*0.1+iGlobalTime*0.8)*0.4+1.0;
+    tp.z=max(tp.z, 10.0);
+    tp.y*=sin(tp.x*0.1+t*0.8)*0.4+1.0;
     repXY(tp.yzx, 8.0);
-    tp.y+=sin(tp.x*.4+iGlobalTime*2.0+tp.z*0.3)*.7;
-    tp=getXRotMat(tp.x*.1+iGlobalTime*0.8+tp.y*0.07)*tp;
+    tp.y+=sin(tp.x*.4+t*2.0+tp.z*0.3)*.7;
+    tp=getXRotMat(tp.x*.1+t*0.8+tp.y*0.07)*tp;
     return tube(tp);
 }
 
@@ -86,35 +88,36 @@ vec3 grad(vec3 p) {
 
 vec3 m(vec3 o, vec3 v) {
     float d;
-    float t=E;
+    float t=MS;
     for (int i=0;i<I;i++) {
         d=f(o+v*t);
-        t+=d*0.5;
+        t+=d*B;
         if (d<E||t>MD)
             break;
     }
     return o+v*t;
 }
 
-vec3 applyFog(vec3 p, float i, vec3 ci, vec3 fc) {
-    return mix(ci, fc, i*p.z);
+vec3 applyFog(float z, float i, vec3 ci, vec3 fc) {
+    return mix(ci, fc, clamp(i*z, 0.0, 1.0));
 }
 
 vec3 c(vec2 sp) {
-    vec3 p=m(cam, getXRotMat(sin(iGlobalTime*0.3)*0.3)*getYRotMat(sin(iGlobalTime*0.7)*0.2)*getZRotMat(sin(iGlobalTime*0.1)*0.4)*normalize(vec3(sp, 1.0)));
-    nm=normalize(grad(p));
+    vec3 p=m(cam, getXRotMat(sin(t*0.3)*0.3)*getYRotMat(sin(t*0.7)*0.2)*getZRotMat(sin(t*0.1)*0.4)*normalize(vec3(sp, 1.0)));
+	nm = normalize(grad(p));
     float diff = max(dot(normalize(p-cam), -nm), 0.0);
-    vec3 c = vec3(1.0, 0.2, 0.1)*(1./length(p-cam))*diff*max(pow(diff, 3.0)*8.0, 1.0)*4.0; //PLACEHOLDER LIGHTING
-    vec3 fc1=vec3(1.0, 0.1, 0.2)*0.8;
-    vec3 fc2=vec3(0.2, 0.1, 1.0)*0.8;
-    float fp = sin(iGlobalTime*0.4)*0.5+0.5;
-    c=applyFog(p, 0.01, c, fc1*fp+(fc2*(1.0-fp)));
+    vec3 c = vec3(1.0, 0.2, 0.1)*(1./length(p-cam))*diff*max(pow(diff, 2.0)*8.0, 1.0)*max(pow(diff, 20.0)*2.0, 1.0)*12.0;
+    vec3 fc1=vec3(1.0, 0.0, 0.1);
+    vec3 fc2=vec3(0.1, 0.0, 1.0);
+    float fp = sin(t*0.4)*0.5+0.5;
+	vec3 fc = fc1*fp+(fc2*(1.0-fp));
+    c=applyFog(p.z, 0.03, c, fc);
     return c;
 }
 
 void main() {
-    cam = vec3(sin(iGlobalTime*0.3)*0.2, cos(iGlobalTime)*6.0, sin(iGlobalTime*0.6)*0.4);
+    cam = vec3(sin(t*0.3)*0.2, cos(t)*6.0, sin(t*0.6)*0.4);
     
     vec2 sp = (2.*gl_FragCoord.xy-iResolution.xy)/iResolution.y;
-    gl_FragColor = vec4(c(sp)*3.0,1.);
+    gl_FragColor = vec4(c(sp)*1.1,1.);
 }

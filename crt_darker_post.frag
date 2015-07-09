@@ -15,8 +15,9 @@ This file is part of [DEMO NAME].
     You should have received a copy of the GNU General Public License
     along with [DEMO NAME], see COPYING. If not, see <http://www.gnu.org/licenses/>.
 */
-
+#ifdef GL_ES
 precision highp float;
+#endif
 
 uniform float iGlobalTime;
 uniform vec2 iResolution;

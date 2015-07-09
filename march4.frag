@@ -6,7 +6,7 @@ uniform float iGlobalTime;
 uniform vec2 iResolution;
 uniform sampler2D iChannel0;
 
-#define ITR 40
+#define ITR 70
 #define EPSILON 0.001
 #define PI 3.14159265
 #define NUM_LIGHTS 2

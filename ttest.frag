@@ -1,4 +1,6 @@
+#ifdef GL_ES
 precision highp float;
+#endif
 
 vec3 blend(vec4 i) {
     return i.rgb*i.a+(gl_FragColor.rgb*(1.0-i.a));

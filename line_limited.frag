@@ -1,4 +1,6 @@
+#ifdef GL_ES
 precision highp float;
+#endif
 
 uniform vec2 iResolution;
 uniform float iGlobalTime;
